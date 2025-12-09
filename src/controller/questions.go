@@ -14,7 +14,7 @@ type QuestionController struct {
 }
 
 func (qc QuestionController) Get(c *gin.Context) {
-	ques, _ := qc.repos.ReadQuestion(1)
+	ques, _ := qc.repos.ReadQuestion()
 	c.JSON(http.StatusOK, ques)
 }
 

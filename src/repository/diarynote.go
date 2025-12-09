@@ -17,7 +17,7 @@ func (d DiaryRepository) CreateQuestion(question model.Question) error {
 	return err
 }
 
-func (d DiaryRepository) ReadQuestion(userId uint) ([]model.Question, error) {
+func (d DiaryRepository) ReadQuestion() ([]model.Question, error) {
 	questions, err := gorm.G[model.Question](d.db).Find(d.ctx)
 	return questions, err
 }
