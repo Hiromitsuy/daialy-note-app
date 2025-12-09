@@ -1,11 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"time"
 
 	"github.com/lunasky-hy/dialy-note-app/src/database"
+	"github.com/lunasky-hy/dialy-note-app/src/model"
 	"github.com/lunasky-hy/dialy-note-app/src/repository"
 
 	"github.com/gin-gonic/gin"
@@ -56,6 +58,12 @@ func main() {
 			c.JSON(http.StatusOK, ques)
 		})
 		v1.POST("/api/questions", func(c *gin.Context) {
+			var json model.Question
+			if err := c.ShouldBindJSON(&json); err != nil {
+				return
+			}
+			fmt.Println(json.QText);
+			repos.CreateQuestion(json);
 			c.String(http.StatusAccepted, `sended`);
 		})
 		

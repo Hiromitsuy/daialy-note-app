@@ -14,7 +14,7 @@ export default function PostQuestions() {
 
   const handleSubmit = useCallback(
     (values: QuestionForm) => {
-      fetch('/api/v1/questions', {
+      fetch('/v1/api/questions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

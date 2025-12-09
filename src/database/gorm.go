@@ -14,7 +14,6 @@ import (
 func ConnectPostgres() *gorm.DB {
 	DB_HOST := os.Getenv("DB_HOST")
 	DB_USER := os.Getenv("DB_USER")
-	// DB_PASS := os.Getenv("DB_PASSWORD")
 	DB_NAME := os.Getenv("DB_NAME")
 	DB_PORT := os.Getenv("DB_PORT")
 	DB_PORTNUM, _ := strconv.Atoi(DB_PORT)
