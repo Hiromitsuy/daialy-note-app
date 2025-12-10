@@ -26,5 +26,7 @@ func ConnectPostgres() *gorm.DB {
 	}
 
 	db.AutoMigrate(&model.Question{})
+	db.AutoMigrate(&model.User{})
+	db.AutoMigrate(&model.Diary{})
 	return db
 }

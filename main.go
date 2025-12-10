@@ -8,6 +8,7 @@ import (
 	"github.com/lunasky-hy/dialy-note-app/src/controller"
 	"github.com/lunasky-hy/dialy-note-app/src/database"
 	"github.com/lunasky-hy/dialy-note-app/src/repository"
+	"github.com/lunasky-hy/dialy-note-app/src/service"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -45,7 +46,9 @@ func main() {
 
 	db := database.ConnectPostgres()
 	repos := repository.CreateRepository(db)
-	questionController := controller.CreateQuestionController(repos)
+	
+	questionService := service.CreateQuestonService(repos)
+	questionController := controller.CreateQuestionController(questionService)
 
 	// loggerとrecoveryミドルウェア付きGinルーター作成
 	r := gin.Default()

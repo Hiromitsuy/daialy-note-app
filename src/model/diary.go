@@ -6,11 +6,12 @@ import (
 	"gorm.io/gorm"
 )
 
-type Question struct {
+type Diary struct {
 	gorm.Model
 	ID uint `json:"id" gorm:"primaryKey;unique;autoIncrement"`
-	QText string `json:"qtext"`
+	Note string
+	UserID uint
+	QuestionID uint
 	CreatedAt time.Time `json:"createdAt"`
 	DeletedAt gorm.DeletedAt `gorm:"index"`
-	Diaries []Diary
 }
