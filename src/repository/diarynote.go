@@ -31,7 +31,7 @@ func (d DiaryRepository) DiaryCreate(diary model.Diary) error {
 
 func (d DiaryRepository) DiariesFind(userId uint) ([]model.Diary, error) {
 	var diaries []model.Diary
-	error := d.db.Model(&model.Diary{}).Where(&model.Diary{UserID: userId}).Find(diaries).Error
+	error := d.db.Model(&model.Diary{}).Preload("Question").Where(&model.Diary{UserID: userId}).Find(&diaries).Error
 	return diaries, error
 }
 
