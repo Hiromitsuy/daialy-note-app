@@ -1,15 +1,19 @@
 import useSWR from 'swr';
-import { fetcherJson } from '../lib/fetcher';
+import { authorizeFetcherJson } from '../lib/fetcher';
 import type { Diary } from '../models/diary';
 import { Card, Flex, Typography } from 'antd';
+import useAuthStorage from '../lib/useAuthStorage';
 const { Title, Text } = Typography;
 
 export default function Diaries() {
+  const { token } = useAuthStorage();
   const {
     data: daiaries,
     // isLoading,
     // mutate,
-  } = useSWR<Diary[]>('/v1/api/diaries', fetcherJson);
+  } = useSWR<Diary[]>('/v1/api/diaries', () =>
+    authorizeFetcherJson('/v1/api/diaries', token || ''),
+  );
 
   console.log(daiaries);
   return (

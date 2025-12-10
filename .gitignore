@@ -30,3 +30,6 @@ go.work
 */.idea/
 
 .env*
+
+.DS_Store
+*/.DS_Store

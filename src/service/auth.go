@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/lunasky-hy/dialy-note-app/src/authorization"
 	"github.com/lunasky-hy/dialy-note-app/src/model"
 	"github.com/lunasky-hy/dialy-note-app/src/repository"
 	"golang.org/x/crypto/bcrypt"
@@ -12,6 +13,7 @@ import (
 
 type AuthService struct {
 	repos repository.DiaryRepository
+	authHandler authorization.AuthHandler
 	secret string
 }
 
@@ -29,16 +31,10 @@ func (s AuthService) Register(user model.User) (string, error) {
 }
 
 func (s AuthService) AuthorizeUser(user model.User) (string, error) {
-	registerdUser, db_err := s.repos.UserGet(user.Name)
+	auth_err := s.authHandler.AuthUser(&user)
 
-	if db_err != nil {
-		return "", db_err
-	}
-
-	pw_err := bcrypt.CompareHashAndPassword(registerdUser.Password, user.Password)
-
-	if pw_err != nil {
-		return "", pw_err
+	if auth_err != nil {
+		return "", auth_err
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
@@ -52,6 +48,7 @@ func (s AuthService) AuthorizeUser(user model.User) (string, error) {
 
 func CreateAuthService(repos repository.DiaryRepository) AuthService {
 	secret := os.Getenv("AUTH_SECRET");
-	s := AuthService{repos: repos, secret: secret}
+	authHander := authorization.CreateAuthHandler(repos)
+	s := AuthService{repos: repos, secret: secret, authHandler: authHander}
 	return s
 }

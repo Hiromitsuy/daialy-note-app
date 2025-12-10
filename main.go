@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 
+	"github.com/lunasky-hy/dialy-note-app/src/authorization"
 	"github.com/lunasky-hy/dialy-note-app/src/controller"
 	"github.com/lunasky-hy/dialy-note-app/src/database"
 	"github.com/lunasky-hy/dialy-note-app/src/repository"
@@ -21,14 +22,17 @@ func main() {
 	db := database.ConnectPostgres()
 	repos := repository.CreateRepository(db)
 
+	authHandler := authorization.CreateAuthHandler(repos)
+
+	authService := service.CreateAuthService(repos)
+	authController := controller.CreateAuthController(authService)
+
 	questionService := service.CreateQuestonService(repos)
 	questionController := controller.CreateQuestionController(questionService)
 
 	diaryService := service.CreateDiaryService(repos)
-	diaryController := controller.CreateDiaryController(diaryService)
+	diaryController := controller.CreateDiaryController(diaryService, authHandler)
 
-	authService := service.CreateAuthService(repos)
-	authController := controller.CreateAuthController(authService)
 
 
 	// loggerとrecoveryミドルウェア付きGinルーター作成

@@ -9,8 +9,8 @@ type DiaryService struct {
 	repos repository.DiaryRepository
 }
 
-func (s DiaryService) Find() ([]model.Diary, error) {
-	diaries, error := s.repos.DiariesFind(1)
+func (s DiaryService) Find(userId uint) ([]model.Diary, error) {
+	diaries, error := s.repos.DiariesFind(userId)
 	return diaries, error
 }
 
