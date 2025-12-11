@@ -1,5 +1,5 @@
 import { LoadingOutlined } from '@ant-design/icons';
-import { Button, Card, Flex, Form, Input, Segmented, Typography } from 'antd';
+import { Button, Card, Flex, Form, Input, Radio, Typography } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 import { useCallback, useState } from 'react';
 import useSWR from 'swr';
@@ -30,6 +30,8 @@ export default function PostNote() {
 
   const handleSubmit = useCallback(
     (values: PostForm) => {
+      console.log(values.theme);
+      if (!values.theme) return;
       setIsSending(true);
       fetch('/v1/api/diaries', {
         method: 'POST',
@@ -63,34 +65,34 @@ export default function PostNote() {
       <Card>
         <Flex gap={'middle'} vertical>
           <Title level={3}>今日の記録を書き留めよう。</Title>
-          <Form
-            form={form}
-            layout="vertical"
-            onFinish={handleSubmit}
-            initialValues={{ theme: 1 }}
-          >
+          <Form form={form} layout="vertical" onFinish={handleSubmit}>
             {isLoading && <LoadingOutlined />}
-            {questions && (
-              <FormItem
-                name={'theme'}
-                label="今日のテーマ"
-                rules={[{ required: true }]}
-              >
-                <Segmented
-                  options={questions.map((qItem) => {
-                    return { label: qItem.qtext, value: qItem.id };
-                  })}
-                  size="large"
-                />
-              </FormItem>
-            )}
+
+            <FormItem
+              name={'theme'}
+              label="今日のテーマ"
+              rules={[
+                { required: true, message: '回答する質問を選びましょう。' },
+              ]}
+            >
+              <Radio.Group>
+                {questions?.map((it, key) => (
+                  <Radio.Button value={it.id} key={key}>
+                    {it.qtext}
+                  </Radio.Button>
+                ))}
+              </Radio.Group>
+            </FormItem>
+
             <Link style={{ textAlign: 'right' }} onClick={() => mutate()}>
               選び直す？
             </Link>
             <FormItem
               name={'note'}
               label={'今日の記録'}
-              rules={[{ required: true }]}
+              rules={[
+                { required: true, message: '「ひとこと」を入力しましょう' },
+              ]}
             >
               <TextArea
                 rows={2}

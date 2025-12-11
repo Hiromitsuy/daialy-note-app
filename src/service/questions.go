@@ -10,11 +10,17 @@ type QuestionService struct {
 }
 
 func (s QuestionService) Find() ([]model.Question, error) {
-	questions, error := s.repos.QuestionsFind()
+	questions, error := s.repos.QuestionsFindRand(3)
 	return questions, error
 }
 
-func (s QuestionService) Create(q model.Question) (error) {
+func (s QuestionService) FindByUser(uid uint) ([]model.Question, error) {
+	questions, error := s.repos.QuestionsFindBy(model.Question{UserID: uid})
+	return questions, error
+}
+
+func (s QuestionService) Create(q model.Question, u model.User) (error) {
+	q.UserID = u.ID;
 	error := s.repos.QuestionCreate(q)
 	return error
 }

@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -23,8 +22,14 @@ func (qc QuestionController) Get(c *gin.Context) {
 		return
 	}
 
-	ques, _ := qc.service.Find()
-	c.JSON(http.StatusOK, ques)
+	isMine := c.Query("mine")
+	if isMine == "true" {
+		ques, _ := qc.service.FindByUser(user.ID)
+		c.JSON(http.StatusOK, ques)
+	} else {
+		ques, _ := qc.service.Find()
+		c.JSON(http.StatusOK, ques)
+	}
 }
 
 func (qc QuestionController) Post(c *gin.Context) {
@@ -40,8 +45,7 @@ func (qc QuestionController) Post(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err})
 		return
 	}
-	fmt.Println(json.QText);
-	qc.service.Create(json);
+	qc.service.Create(json, user);
 	c.String(http.StatusAccepted, `sended`);
 }
 

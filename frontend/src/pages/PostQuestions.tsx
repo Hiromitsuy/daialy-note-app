@@ -2,6 +2,10 @@ import { Button, Card, Flex, Form, Input, Typography } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 import { useCallback, useState } from 'react';
 import useAuthStorage from '../lib/useAuthStorage';
+import Questions from '../components/Questions';
+import type { Question } from '../models/question';
+import useSWR from 'swr';
+import { authorizeFetcherJson } from '../lib/fetcher';
 const { Item: FormItem } = Form;
 const { Title } = Typography;
 
@@ -13,6 +17,10 @@ export default function PostQuestions() {
   const [form] = useForm<QuestionForm>();
   const [isSending, setIsSending] = useState(false);
   const { token } = useAuthStorage();
+  const { data: questions, mutate } = useSWR<Question[]>(
+    '/v1/api/questions?mine=true',
+    (url: string) => authorizeFetcherJson(url, token || ''),
+  );
 
   const handleSubmit = useCallback(
     (values: QuestionForm) => {
@@ -25,13 +33,14 @@ export default function PostQuestions() {
         body: JSON.stringify(values),
       })
         .then(() => setIsSending(false))
-        .then(() => form.resetFields());
+        .then(() => form.resetFields())
+        .then(() => mutate());
     },
-    [form, token],
+    [form, token, mutate],
   );
 
   return (
-    <Flex vertical>
+    <Flex vertical gap={'large'}>
       <Card style={{ width: '100%', maxWidth: 680, margin: 'auto' }}>
         <Flex vertical>
           <Title level={3}>出題する質問を追加しよう。</Title>
@@ -51,6 +60,8 @@ export default function PostQuestions() {
           </Form>
         </Flex>
       </Card>
+      <Title level={4}>あなたが投稿した質問</Title>
+      {questions && <Questions questions={questions} />}
     </Flex>
   );
 }

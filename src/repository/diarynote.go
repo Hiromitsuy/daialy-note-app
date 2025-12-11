@@ -23,6 +23,18 @@ func (d DiaryRepository) QuestionsFind() ([]model.Question, error) {
 	return questions, error
 }
 
+func (d DiaryRepository) QuestionsFindRand(lim int) ([]model.Question, error) {
+	var questions []model.Question
+	error := d.db.Order("RANDOM()").Limit(lim).Find(&questions).Error
+	return questions, error
+}
+
+func (d DiaryRepository) QuestionsFindBy(q model.Question) ([]model.Question, error) {
+	var questions []model.Question
+	error := d.db.Where(&q).Find(&questions).Error
+	return questions, error
+}
+
 func (d DiaryRepository) DiaryCreate(diary model.Diary) error {
 	err := gorm.G[model.Diary](d.db).Create(d.ctx, &diary)
 	return err

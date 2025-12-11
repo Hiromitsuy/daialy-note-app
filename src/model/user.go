@@ -15,4 +15,5 @@ type User struct {
 	UpdatedAt time.Time `json:"updatedAt"`
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 	Diaries []Diary
+	Questions []Question
 }
