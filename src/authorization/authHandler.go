@@ -42,8 +42,6 @@ func (h AuthHandler) VerifyJwt(authHeader string, user *model.User) error {
         return errors.New("bearer token required")
     }
 
-    fmt.Println("token: "+ tokenStr)
-
     token, jwt_err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
         if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
             return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])

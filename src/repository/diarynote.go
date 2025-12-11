@@ -18,7 +18,6 @@ func (d DiaryRepository) QuestionCreate(question model.Question) error {
 }
 
 func (d DiaryRepository) QuestionsFind() ([]model.Question, error) {
-	// questions, err := gorm.G[model.Question](d.db).Find(d.ctx)
 	var questions []model.Question
 	error := d.db.Find(&questions).Error
 	return questions, error
@@ -29,10 +28,21 @@ func (d DiaryRepository) DiaryCreate(diary model.Diary) error {
 	return err
 }
 
+func (d DiaryRepository) DiaryFindById(id uint) (model.Diary, error) {
+	var diaries model.Diary
+	error := d.db.Model(&model.Diary{}).Where(&model.Diary{ID: id}).First(&diaries).Error
+	return diaries, error
+}
+
 func (d DiaryRepository) DiariesFind(userId uint) ([]model.Diary, error) {
 	var diaries []model.Diary
 	error := d.db.Model(&model.Diary{}).Preload("Question").Where(&model.Diary{UserID: userId}).Find(&diaries).Error
 	return diaries, error
+}
+
+func (d DiaryRepository) DiaryDelete(id uint) error {
+	err := d.db.Model(&model.Diary{}).Delete(&model.Diary{ID: id}).Error
+	return err
 }
 
 func (d DiaryRepository) UserCreate(user model.User) error {

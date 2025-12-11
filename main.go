@@ -46,6 +46,7 @@ func main() {
 
 		v1.GET("/api/diaries", diaryController.Get)
 		v1.POST("/api/diaries", diaryController.Post)
+		v1.DELETE("/api/diaries/:postId", diaryController.Delete)
 
 		v1.POST("/api/auth/signup", authController.Signup)
 		v1.POST("/api/auth/signin", authController.Signin)

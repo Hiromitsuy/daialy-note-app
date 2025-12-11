@@ -2,6 +2,7 @@ package controller
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/lunasky-hy/dialy-note-app/src/authorization"
@@ -41,6 +42,27 @@ func (qc DiariesController) Post(c *gin.Context) {
 	}
 	qc.service.Create(json, user);
 	c.String(http.StatusAccepted, `sended`);
+}
+
+func (qc DiariesController) Delete (c *gin.Context) {
+	authHeader := c.Request.Header.Get("Authorization");
+	user := model.User{}
+	if auth_err := qc.authHandler.VerifyJwt(authHeader, &user); auth_err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": auth_err})
+		return
+	}
+
+	postId, err := strconv.Atoi(c.Param("postId"))
+	if err != nil || postId == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Delete target item id is not found."})
+		return
+	}
+
+	if err := qc.service.Delete(uint(postId), user); err != nil {
+		c.JSON(http.StatusForbidden, gin.H{"error": err})
+		return
+	}
+	c.JSON(http.StatusNoContent, nil)
 }
 
 func CreateDiaryController(service service.DiaryService, authHandler authorization.AuthHandler) DiariesController {
