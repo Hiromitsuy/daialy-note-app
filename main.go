@@ -28,7 +28,7 @@ func main() {
 	authController := controller.CreateAuthController(authService)
 
 	questionService := service.CreateQuestonService(repos)
-	questionController := controller.CreateQuestionController(questionService)
+	questionController := controller.CreateQuestionController(questionService, authHandler)
 
 	diaryService := service.CreateDiaryService(repos)
 	diaryController := controller.CreateDiaryController(diaryService, authHandler)

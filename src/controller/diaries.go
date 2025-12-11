@@ -17,9 +17,9 @@ type DiariesController struct {
 func (qc DiariesController) Get(c *gin.Context) {
 	authHeader := c.Request.Header.Get("Authorization");
 	user := model.User{}
-	auth_err := qc.authHandler.VerifyJwt(authHeader, &user);
-	if auth_err != nil {
+	if auth_err := qc.authHandler.VerifyJwt(authHeader, &user); auth_err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": auth_err})
+		return
 	}
 
 	ques, _ := qc.service.Find(user.ID)
@@ -27,11 +27,19 @@ func (qc DiariesController) Get(c *gin.Context) {
 }
 
 func (qc DiariesController) Post(c *gin.Context) {
-	var json model.Diary
-	if err := c.ShouldBindJSON(&json); err != nil {
+	authHeader := c.Request.Header.Get("Authorization");
+	user := model.User{}
+	if auth_err := qc.authHandler.VerifyJwt(authHeader, &user); auth_err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": auth_err})
 		return
 	}
-	qc.service.Create(json);
+
+	var json model.Diary
+	if err := c.ShouldBindJSON(&json); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err})
+		return
+	}
+	qc.service.Create(json, user);
 	c.String(http.StatusAccepted, `sended`);
 }
 

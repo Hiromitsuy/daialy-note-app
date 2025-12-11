@@ -3,8 +3,9 @@ import { Button, Card, Flex, Form, Input, Segmented, Typography } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 import { useCallback, useState } from 'react';
 import useSWR from 'swr';
-import { fetcherJson } from '../lib/fetcher';
+import { authorizeFetcherJson } from '../lib/fetcher';
 import type { Question } from '../models/question';
+import useAuthStorage from '../lib/useAuthStorage';
 
 const { Item: FormItem } = Form;
 const { TextArea } = Input;
@@ -16,11 +17,14 @@ type PostForm = {
 };
 
 export default function PostNote() {
+  const { token } = useAuthStorage();
   const {
     data: questions,
     isLoading,
     mutate,
-  } = useSWR<Question[]>('/v1/api/questions', fetcherJson);
+  } = useSWR<Question[]>('/v1/api/questions', (url: string) =>
+    authorizeFetcherJson(url, token || ''),
+  );
   const [isSending, setIsSending] = useState(false);
   const [form] = useForm<PostForm>();
 
@@ -29,7 +33,10 @@ export default function PostNote() {
       setIsSending(true);
       fetch('/v1/api/diaries', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({
           questionId: values.theme,
           note: values.note,
@@ -39,7 +46,7 @@ export default function PostNote() {
         .then(() => setIsSending(false))
         .then(() => form.resetFields());
     },
-    [form],
+    [form, token],
   );
 
   const getDateString = () => {

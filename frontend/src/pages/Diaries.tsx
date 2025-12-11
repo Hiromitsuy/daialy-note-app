@@ -11,8 +11,8 @@ export default function Diaries() {
     data: daiaries,
     // isLoading,
     // mutate,
-  } = useSWR<Diary[]>('/v1/api/diaries', () =>
-    authorizeFetcherJson('/v1/api/diaries', token || ''),
+  } = useSWR<Diary[]>('/v1/api/diaries', (url: string) =>
+    authorizeFetcherJson(url, token || ''),
   );
 
   console.log(daiaries);

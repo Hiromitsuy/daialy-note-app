@@ -14,8 +14,8 @@ func (s DiaryService) Find(userId uint) ([]model.Diary, error) {
 	return diaries, error
 }
 
-func (s DiaryService) Create(d model.Diary) (error) {
-	newData := model.Diary{UserID: 1, Note: d.Note, QuestionID: d.QuestionID}
+func (s DiaryService) Create(d model.Diary, u model.User) (error) {
+	newData := model.Diary{UserID: u.ID, Note: d.Note, QuestionID: d.QuestionID}
 	error := s.repos.DiaryCreate(newData)
 	return error
 }

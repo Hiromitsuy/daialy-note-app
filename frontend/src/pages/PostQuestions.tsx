@@ -1,6 +1,7 @@
 import { Button, Card, Flex, Form, Input, Typography } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 import { useCallback, useState } from 'react';
+import useAuthStorage from '../lib/useAuthStorage';
 const { Item: FormItem } = Form;
 const { Title } = Typography;
 
@@ -11,6 +12,7 @@ type QuestionForm = {
 export default function PostQuestions() {
   const [form] = useForm<QuestionForm>();
   const [isSending, setIsSending] = useState(false);
+  const { token } = useAuthStorage();
 
   const handleSubmit = useCallback(
     (values: QuestionForm) => {
@@ -18,13 +20,14 @@ export default function PostQuestions() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(values),
       })
         .then(() => setIsSending(false))
         .then(() => form.resetFields());
     },
-    [form],
+    [form, token],
   );
 
   return (

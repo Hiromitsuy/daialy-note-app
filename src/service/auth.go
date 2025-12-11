@@ -39,7 +39,9 @@ func (s AuthService) AuthorizeUser(user model.User) (string, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"username": user.Name,
+		"sub": user.Name,
 		"exp": time.Now().Add(time.Hour * 72).Unix(),
+		"iat": time.Now().Unix(),
 	})
 	tokenStr, jwt_err := token.SignedString([]byte(s.secret))
 
