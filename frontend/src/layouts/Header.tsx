@@ -21,10 +21,10 @@ export default function AppHeader() {
             <Link href="/auth/signout">サインアウト</Link>
           </>
         ) : (
-          <>
+          <Flex gap={'middle'}>
             <Link href="/auth/signin">ログイン</Link>
             <Link href="/auth/signup">登録</Link>
-          </>
+          </Flex>
         )}
       </Flex>
     </Header>

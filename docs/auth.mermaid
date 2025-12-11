@@ -1,0 +1,34 @@
+sequenceDiagram
+    autonumber
+    participant Client as クライアント<br>(Frontend)
+    participant Server as サーバー<br>(Backend)
+
+    Note over Client, Server: 【フェーズ1】認証とJWTの発行
+
+    Client->>Server: 1. ログインリクエスト (ID / Password)
+    activate Server
+    Server->>Server: ユーザー情報の検証 (DB照合)
+    Server->>Server: JWTの生成<br>(Payload作成 + 秘密鍵で署名)
+    Server-->>Client: 2. レスポンス (JWTを含む)
+    deactivate Server
+
+    activate Client
+    Note right of Client: 3. クライアント側で保存<br>(LocalStorage / Cookie等)
+    deactivate Client
+
+    Note over Client, Server: 【フェーズ2】JWTを使ったAPIリクエスト
+
+    activate Client
+    Note right of Client: ストレージからJWTを取得
+    Client->>Server: 4. APIリクエスト<br>Header: Authorization: Bearer {JWT}
+    deactivate Client
+
+    activate Server
+    Server->>Server: 5. JWTの検証<br>(署名確認・有効期限チェック)
+    
+    alt 検証成功 (Valid)
+        Server-->>Client: 6. 正常レスポンス (要求されたデータ)
+    else 検証失敗 (Invalid / Expired)
+        Server-->>Client: エラーレスポンス (401 Unauthorized)
+    end
+    deactivate Server

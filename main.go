@@ -2,6 +2,9 @@ package main
 
 import (
 	"log"
+	"os"
+	"path"
+	"path/filepath"
 
 	"github.com/lunasky-hy/dialy-note-app/src/authorization"
 	"github.com/lunasky-hy/dialy-note-app/src/controller"
@@ -33,8 +36,6 @@ func main() {
 	diaryService := service.CreateDiaryService(repos)
 	diaryController := controller.CreateDiaryController(diaryService, authHandler)
 
-
-
 	// loggerとrecoveryミドルウェア付きGinルーター作成
 	r := gin.Default()
 
@@ -52,9 +53,20 @@ func main() {
 		v1.POST("/api/auth/signin", authController.Signin)
 	}
 
+	r.NoRoute(func(c *gin.Context) {
+		_, file := path.Split(c.Request.RequestURI)
+		ext := filepath.Ext(file)
+		if file == "" || ext == "" {
+			c.File("./frontend/dist" + "/index.html")
+		} else {
+			c.File("./frontend/dist" + c.Request.RequestURI)
+		}
+	})
+
 	// ポート8080でサーバー起動（デフォルト）
 	// 0.0.0.0:8080（Windowsではlocalhost:8080）で待機
-	sverr := r.Run()
+	port := os.Getenv("PORT")
+	sverr := r.Run(`localhost:` + port)
 	if sverr != nil {
 		return
 	}
