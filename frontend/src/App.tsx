@@ -8,6 +8,7 @@ import Signup from './pages/auth/Signup';
 import Signin from './pages/auth/Signin';
 import Signout from './pages/auth/Signout';
 import AuthedRoutes from './layouts/AuthedRoutes';
+import AppHeader from './layouts/Header';
 
 const layoutStyle: React.CSSProperties = {
   width: '100%',
@@ -25,6 +26,7 @@ const innerBodyStyle: React.CSSProperties = {
 function App() {
   return (
     <Layout hasSider={false} style={layoutStyle}>
+      <AppHeader />
       <Flex vertical style={innerBodyStyle}>
         <BrowserRouter>
           <Routes>
