@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"os"
 	"time"
 
@@ -18,11 +19,16 @@ type AuthService struct {
 }
 
 func (s AuthService) Register(user model.User) (string, error) {
-	hashedPass, _ := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	hashedPass, bcrypt_error := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if bcrypt_error != nil {
+		return "", bcrypt_error
+	}
+
 	newUser := model.User{Name: user.Name, Password: hashedPass}
 	create_err := s.repos.UserCreate(newUser)
 
 	if create_err != nil {
+		fmt.Println("create_err")
 		return "", create_err
 	}
 

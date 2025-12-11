@@ -12,33 +12,42 @@ type AuthController struct {
 	service service.AuthService
 }
 
+type RequestSignup struct {
+	Name string `json:"name"`
+	Password string `json:"password"`
+}
+
 func (ac AuthController) Signup(c *gin.Context) {
-	var json model.User
+	var json RequestSignup
 	if parse_err := c.ShouldBindJSON(&json); parse_err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": parse_err.Error()})
 		return
 	}
 
-	token, register_err := ac.service.Register(json)
+	user := model.User{Name: json.Name, Password: []byte(json.Password)}
+	token, register_err := ac.service.Register(user)
 	
 	if register_err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": register_err.Error()})
+		return
 	}
 
 	c.JSON(http.StatusCreated, gin.H{"token": token})
 }
 
 func (ac AuthController) Signin(c *gin.Context) {
-	var json model.User
+	var json RequestSignup
 	if parse_err := c.ShouldBindJSON(&json); parse_err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": parse_err.Error()})
 		return
 	}
 
-	token, auth_err := ac.service.AuthorizeUser(json)
+	user := model.User{Name: json.Name, Password: []byte(json.Password)}
+	token, auth_err := ac.service.AuthorizeUser(user)
 	
 	if auth_err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": auth_err.Error()})
+		return
 	}
 
 	c.JSON(http.StatusCreated, gin.H{"token": token})
