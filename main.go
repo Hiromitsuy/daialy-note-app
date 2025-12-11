@@ -19,7 +19,7 @@ import (
 func main() {
 	enverr := godotenv.Load()
 	if enverr != nil {
-		log.Fatal("Error loading .env file")
+		log.Println("Error loading .env file")
 	}
 
 	db := database.ConnectPostgres()
@@ -66,7 +66,10 @@ func main() {
 	// ポート8080でサーバー起動（デフォルト）
 	// 0.0.0.0:8080（Windowsではlocalhost:8080）で待機
 	port := os.Getenv("PORT")
-	sverr := r.Run(`localhost:` + port)
+    if port == "" {
+        port = "8080"
+    }
+	sverr := r.Run(`:` + port)
 	if sverr != nil {
 		return
 	}
