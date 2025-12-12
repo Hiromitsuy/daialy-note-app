@@ -1,31 +1,39 @@
 import { useCallback, useEffect, useState } from 'react';
 
+const STORAGE_EVENT_KEY = 'auth-token-changed';
+
 export default function useAuthStorage() {
-  const getStorage = useCallback(() => {
+  const getStorage = () => {
     if (typeof window === 'undefined') return null;
+    return sessionStorage.getItem('token');
+  };
 
-    try {
-      const stored = sessionStorage.getItem('token');
-      return stored;
-    } catch {
-      return null;
-    }
-  }, []);
-
-  const [token, setToken] = useState(getStorage);
+  const [token, setTokenState] = useState(getStorage);
 
   useEffect(() => {
+    const handleStorageChange = () => {
+      setTokenState(getStorage());
+    };
+
+    window.addEventListener(STORAGE_EVENT_KEY, handleStorageChange);
+
+    return () => {
+      window.removeEventListener(STORAGE_EVENT_KEY, handleStorageChange);
+    };
+  }, []);
+
+  const setToken = useCallback((newToken: string | null) => {
     if (typeof window === 'undefined') return;
 
-    const nowToken = sessionStorage.getItem('token');
-    if (token == nowToken) return;
-
-    if (token) {
-      sessionStorage.setItem('token', token);
+    if (newToken) {
+      sessionStorage.setItem('token', newToken);
     } else {
       sessionStorage.removeItem('token');
     }
-  }, [token]);
+
+    setTokenState(newToken);
+    window.dispatchEvent(new Event(STORAGE_EVENT_KEY));
+  }, []);
 
   return { token, setToken };
 }
